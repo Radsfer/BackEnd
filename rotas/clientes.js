@@ -79,6 +79,30 @@ module.exports = (app)=>{
           }
         );
       })
+      rotas.get('/clientes_nome/:nome', (req, res) => {
+        var nome = req.params.nome;
+        var sql = `select * from cliente where nome = "${nome}"`;
+        
+        connection.query(
+            sql,
+            (err, results, fields) => {
+                if (err) {
+                    console.log(err);
+                    res.status(500).send({ erro: 'Erro no servidor' });
+                    return;
+                }
+    
+                console.log(results);
+    
+                if (results.length > 0) {
+                    res.send({ existe: true, cliente: results[0] });
+                } else {
+                    res.send({ existe: false });
+                }
+            }
+        );
+    });
+    
 
       app.post('/clientes',(req,res)=>{
         var nome = req.body.nome
@@ -154,6 +178,19 @@ module.exports = (app)=>{
             console.error('Erro ao atualizar o cliente:', error);
             res.status(500).json({ error: 'Erro ao atualizar o cliente.' });
           } else {
+            if (req.files && req.files.avatar) {
+              const caminhoTemp = req.files.avatar.path;
+              const caminhoFinal = `./uploads/clientes/${idCliente}.png`;
+      
+              fs.copyFile(caminhoTemp, caminhoFinal, (err) => {
+                if (err) {
+                  console.error('Erro ao copiar o arquivo de imagem:', err);
+                  res.status(500).json({ error: 'Erro ao atualizar o cliente.' });
+                } else {
+                  console.log('Arquivo de imagem copiado com sucesso.');
+                }
+              });
+            }
             console.log(sql);
             console.log('Cliente atualizado com sucesso.',);
             res.status(200).json({ message: 'Cliente atualizado com sucesso.' });
