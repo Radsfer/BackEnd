@@ -31,7 +31,7 @@ require('./rotas/fornecedores')(app);
 require('./rotas/clientes')(app);
 
 
-
+console.log("Teste");
 
 app.get('/', function (req, res) {
   res.send('Backend Rafael Adolfo rodando...');
